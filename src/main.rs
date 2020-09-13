@@ -1,8 +1,4 @@
-pub mod space;
-pub mod board;
-pub mod game;
-
-use game::Game;
+use tic_tac_toe::game::Game;
 
 fn main() {
     let mut game = Game::new();
