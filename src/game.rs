@@ -17,6 +17,8 @@ impl Game {
   }
 
   pub fn play(&mut self) {
+    clear_terminal();
+    
     while !self.board.game_over() {
       self.play_turn();
     }
@@ -34,7 +36,7 @@ impl Game {
     let coordinates = match self.get_coordinates() {
       Ok(value) => value,
       Err(_) => {
-        print!("\x1B[2J\x1B[1;1H"); // Clears terminal
+        clear_terminal();
         println!("Invalid coordinate(s)! Try again.");
         return ();
       }
@@ -48,7 +50,7 @@ impl Game {
       Space::Empty => panic!("Invalid player!"),
     };
 
-    print!("\x1B[2J\x1B[1;1H"); // Clears terminal
+    clear_terminal();
   }
 
   fn get_coordinates(&self) -> Result<(usize, usize), Box<dyn error::Error>> {
@@ -93,4 +95,8 @@ impl Game {
       _ => println!("Cat's game!"),
     };
   }
+}
+
+fn clear_terminal() {
+  print!("\x1B[2J\x1B[1;1H");
 }
