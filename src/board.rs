@@ -1,4 +1,7 @@
 use crate::space::Space;
+use crate::cursor::Cursor;
+use crate::user_input::UserInput;
+use ansi_term::Colour;
 
 const ROWS: [[(usize, usize);3];8] = [
     [(0, 0), (0, 1), (0, 2)],
@@ -14,34 +17,56 @@ const ROWS: [[(usize, usize);3];8] = [
 ];
 
 pub struct Board {
+    cursor: Cursor,
     grid: [[Space;3];3],
 }
 
 impl Board {
     pub fn new() -> Board {
         Board {
+            cursor: Cursor::new((3, 3)),
             grid: [[Space::Empty;3];3],
         }
     }
     
     pub fn render(&self) {       
-        for row in self.grid.iter() {
-            let mut spaces = [Space::Empty.as_str();3];
+        for (i, row) in self.grid.iter().enumerate() {
+            for (j, space) in row.iter().enumerate() {
+                let is_cursor_pos = self.cursor.coordinates == (i, j);
+                let colored_space = match is_cursor_pos {
+                    true => Colour::Black.on(Colour::Yellow).paint(space.as_str()),
+                    false => Colour::White.on(Colour::Black).paint(space.as_str()),
+                };
 
-            for (idx, space) in row.iter().enumerate() {
-                spaces[idx] = space.as_str();
+                print!("{}", colored_space);
+
+                match j >= row.len() - 1 {
+                    true => println!(""),
+                    false => print!("{}", Colour::White.on(Colour::Black).paint("|")),
+                };
             }
-
-            println!("{}", spaces.join("|"));
         }
     }
 
-    pub fn is_space_occupied(&self, coordinates: &(usize, usize)) -> bool {
+    pub fn set_current_space(&mut self, space: Space) -> bool {
+        let has_set_space = !self.is_space_occupied(&self.cursor.coordinates);
+        if has_set_space {
+            self.set_space(space, self.cursor.coordinates)
+        }
+
+        has_set_space
+    }
+
+    fn is_space_occupied(&self, coordinates: &(usize, usize)) -> bool {
         self.grid[coordinates.0][coordinates.1] != Space::Empty
     }
 
-    pub fn set_space(&mut self, space: Space, coordinates: (usize, usize)) {
+    fn set_space(&mut self, space: Space, coordinates: (usize, usize)) {
         self.grid[coordinates.0][coordinates.1] = space;
+    }
+
+    pub fn move_cursor(&mut self, user_input: UserInput) {
+        self.cursor.move_cursor(user_input);
     }
 
     pub fn game_over(&self) -> bool {

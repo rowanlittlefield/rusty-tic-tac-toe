@@ -1,24 +1,22 @@
-use std::io;
-use std::error;
 use crate::space::Space;
 use crate::board::Board;
+use crate::controller;
+use crate::user_input::UserInput;
 
 pub struct Game {
   board: Board,
-  player: Space,
+  current_player: Space,
 }
 
 impl Game {
   pub fn new() -> Game {
     Game {
       board: Board::new(),
-      player: Space::X,
+      current_player: Space::X,
     }
   }
 
   pub fn play(&mut self) {
-    clear_terminal();
-    
     while !self.board.game_over() {
       self.play_turn();
     }
@@ -27,72 +25,45 @@ impl Game {
   }
 
   fn play_turn(&mut self) {
-    self.board.render();
-    
-    let space = &self.player;
-    let current_player = space.as_str();
-    println!("{}'s turn", current_player);
+    let mut is_turn_over = false;
+    while !is_turn_over {
+      is_turn_over = self.play_tick();
+    }
 
-    let coordinates = match self.get_coordinates() {
-      Ok(value) => value,
-      Err(_) => {
-        clear_terminal();
-        println!("Invalid coordinate(s)! Try again.");
-        return ();
-      }
-    };
-    
-    self.board.set_space(*space, coordinates);
-
-    self.player = match self.player {
+    self.current_player = match self.current_player {
       Space::X => Space::O,
       Space::O => Space::X,
       Space::Empty => panic!("Invalid player!"),
     };
-
-    clear_terminal();
   }
 
-  fn get_coordinates(&self) -> Result<(usize, usize), Box<dyn error::Error>> {
-    let row = self.get_guess("row")?;
-    let col = self.get_guess("col")?;
-    let coordinates = (row, col);
-    let is_space_occupied = self.board.is_space_occupied(&coordinates);
-
-    if !is_space_occupied {
-      Ok(coordinates)
-     } else {
-       Err(From::from("Space occupied!"))
-     }
-  }
-
-  fn get_guess(&self, axis: &str) -> Result<usize, Box<dyn error::Error>> {
-    println!("Select {}.", axis);
-
-    let mut coordinate = String::new();
-
-    io::stdin()
-      .read_line(&mut coordinate)
-      .expect("Failed to read line");
-
-    let coordinate = coordinate.trim()
-      .parse()?;
-
-    if coordinate < 3 { // TODO: replace this magic number with a board method
-      Ok(coordinate)
-    } else {
-      Err(From::from("Invalid coordinate!"))
-    }
+  fn play_tick(&mut self) -> bool {
+      clear_terminal();
+      self.board.render();
+      println!("{}'s turn", &self.current_player.as_str());
+    
+      let user_input = controller::get_user_input();
+      match user_input {
+        UserInput::ENTER => {
+          let has_set_space = self.board.set_current_space(self.current_player);
+          has_set_space
+        },
+        _ => {
+          self.board.move_cursor(user_input);
+          false
+        },
+      }
   }
 
   fn render_game_over_message(&self) {
+    clear_terminal();
     self.board.render();
     println!("Game Over!");
     let winner = self.board.get_winner();
 
     match winner {
       Some(winner) => println!("Player {} wins!", winner.as_str()),
-      _ => println!("Cat's game!"),
+      None => println!("Cat's game!"),
     };
   }
 }
