@@ -23,9 +23,13 @@ pub struct Board {
 
 impl Board {
     pub fn new() -> Board {
+        let grid = [[Space::Empty;3];3];
+        let cursor_dimensions = (grid[0].len(), grid[1].len());
+        let cursor = Cursor::new(cursor_dimensions);
+        
         Board {
-            cursor: Cursor::new((3, 3)),
-            grid: [[Space::Empty;3];3],
+            cursor,
+            grid,
         }
     }
     
