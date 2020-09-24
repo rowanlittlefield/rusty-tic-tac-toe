@@ -1,7 +1,7 @@
+use ansi_term::Colour;
 use crate::space::Space;
 use crate::cursor::Cursor;
 use crate::user_input::UserInput;
-use ansi_term::Colour;
 
 const ROWS: [[(usize, usize);3];8] = [
     [(0, 0), (0, 1), (0, 2)],
