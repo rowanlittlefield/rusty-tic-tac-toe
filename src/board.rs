@@ -48,6 +48,10 @@ impl Board {
         }
     }
 
+    pub fn move_cursor(&mut self, user_input: UserInput) {
+        self.cursor.move_cursor(user_input);
+    }
+
     pub fn set_current_space(&mut self, space: Space) -> bool {
         let has_set_space = !self.is_space_occupied(&self.cursor.coordinates);
         if has_set_space {
@@ -63,10 +67,6 @@ impl Board {
 
     fn set_space(&mut self, space: Space, coordinates: (usize, usize)) {
         self.grid[coordinates.0][coordinates.1] = space;
-    }
-
-    pub fn move_cursor(&mut self, user_input: UserInput) {
-        self.cursor.move_cursor(user_input);
     }
 
     pub fn game_over(&self) -> bool {
