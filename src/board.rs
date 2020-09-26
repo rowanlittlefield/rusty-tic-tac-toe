@@ -116,7 +116,7 @@ mod tests {
     }
 
     #[test]
-    fn set_space_once_should_return_true() {
+    fn set_current_space_once_should_return_true() {
         let mut board = Board::new();
         let expected = true;
 
