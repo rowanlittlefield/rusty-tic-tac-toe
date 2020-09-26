@@ -105,30 +105,33 @@ mod tests {
     use super::*;
 
     #[test]
-    fn is_space_occupied_new_board() {
-        let board = Board::new();
-        let expected = false;
-        
-        let actual = (0..3).any(|row| {
-            (0..3).any(|col| {
-                board.is_space_occupied(&(row, col))
-            })
-        });
+    fn move_cursor() {
+        let mut board = Board::new();
+        let expected = (0, 1);
+
+        board.move_cursor(UserInput::RIGHT);
+
+        let actual = board.cursor.coordinates;
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn set_space_once_should_return_true() {
+        let mut board = Board::new();
+        let expected = true;
+
+        let actual = board.set_current_space(Space::X);
 
         assert_eq!(actual, expected);
     }
 
     #[test]
-    fn is_space_occupied_set_space() {
-        let expected = true;
+    fn set_current_space_twice_should_return_false() {
+        let mut board = Board::new();
+        let expected = false;
 
-        let actual = (0..3).all(|row| {
-            (0..3).all(|col| {
-                let mut board = Board::new();
-                board.set_space(Space::O, (row, col));
-                board.is_space_occupied(&(row, col))
-            })
-        });
+        board.set_current_space(Space::X);
+        let actual = board.set_current_space(Space::O);
 
         assert_eq!(actual, expected);
     }
@@ -147,11 +150,17 @@ mod tests {
 
         let actual = ROWS.iter().all(|&row| {
             [Space::X, Space::O].iter().all(|space| {
-                let mut board = Board::new();
-
+                let mut grid = [[Space::Empty;3];3];
                 row.iter().for_each(|&coordinates| {
-                    board.set_space(*space, coordinates)
+                    grid[coordinates.0][coordinates.1] = *space;
                 });
+
+                let cursor_dimensions = (grid[0].len(), grid[1].len());
+                let cursor = Cursor::new(cursor_dimensions);
+                let board = Board {
+                    cursor,
+                    grid,
+                };
 
                 board.game_over()
             })
@@ -176,11 +185,17 @@ mod tests {
 
         let actual = ROWS.iter().all(|&row| {
             [Space::X, Space::O].iter().all(|space| {
-                let mut board = Board::new();
-
+                let mut grid = [[Space::Empty;3];3];
                 row.iter().for_each(|&coordinates| {
-                    board.set_space(*space, coordinates)
+                    grid[coordinates.0][coordinates.1] = *space;
                 });
+
+                let cursor_dimensions = (grid[0].len(), grid[1].len());
+                let cursor = Cursor::new(cursor_dimensions);
+                let board = Board {
+                    cursor,
+                    grid,
+                };
 
                 match board.get_winner() {
                     Some(player) => player == space,
