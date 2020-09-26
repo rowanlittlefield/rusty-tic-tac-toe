@@ -44,7 +44,8 @@ impl Board {
 
                 print!("{}", colored_space);
 
-                match j >= row.len() - 1 {
+                let is_end_of_row = j >= row.len() - 1;
+                match is_end_of_row {
                     true => println!(""),
                     false => print!("{}", Colour::White.on(Colour::Black).paint("|")),
                 };
