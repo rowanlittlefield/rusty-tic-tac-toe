@@ -1,4 +1,5 @@
 pub mod board;
+pub mod board_memento;
 pub mod controller;
 pub mod cursor;
 pub mod game;

@@ -1,6 +1,7 @@
 use ansi_term::Colour;
-use crate::space::Space;
+use crate::board_memento::{BoardMemento, SetSpaceMemento};
 use crate::cursor::Cursor;
+use crate::space::Space;
 use crate::user_input::UserInput;
 
 const ROWS: [[(usize, usize);3];8] = [
@@ -53,17 +54,19 @@ impl Board {
         }
     }
 
-    pub fn move_cursor(&mut self, user_input: UserInput) {
-        self.cursor.move_cursor(user_input);
+    pub fn move_cursor(&mut self, user_input: UserInput) -> BoardMemento {
+        self.cursor.move_cursor(&user_input);
+        BoardMemento::MoveCursor(user_input)
     }
 
-    pub fn set_current_space(&mut self, space: Space) -> bool {
-        let has_set_space = !self.is_space_occupied(&self.cursor.coordinates);
-        if has_set_space {
+    pub fn set_current_space(&mut self, space: Space) -> BoardMemento {
+        let can_set_space = !self.is_space_occupied(&self.cursor.coordinates);
+        if can_set_space {
             self.set_space(space, self.cursor.coordinates)
         }
 
-        has_set_space
+        let set_space_memento = SetSpaceMemento::new(self.cursor.coordinates, can_set_space, space);
+        BoardMemento::SetSpace(set_space_memento)
     }
 
     fn is_space_occupied(&self, coordinates: &(usize, usize)) -> bool {

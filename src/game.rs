@@ -1,11 +1,13 @@
 use crate::space::Space;
 use crate::board::Board;
+use crate::board_memento::BoardMemento;
 use crate::controller;
 use crate::user_input::UserInput;
 
 pub struct Game {
   board: Board,
   current_player: Space,
+  history: Vec<BoardMemento>,
 }
 
 impl Game {
@@ -13,6 +15,7 @@ impl Game {
     Game {
       board: Board::new(),
       current_player: Space::X,
+      history: vec!(),
     }
   }
 
@@ -25,10 +28,12 @@ impl Game {
   }
 
   fn play_turn(&mut self) {
-    let mut is_turn_over = false;
-    while !is_turn_over {
-      is_turn_over = self.play_tick();
+    let mut next_history_item = BoardMemento::NullBoardMemento;
+    while !next_history_item.has_set_space() {
+      next_history_item = self.play_tick();
     }
+
+    self.history.push(next_history_item);
 
     self.current_player = match self.current_player {
       Space::X => Space::O,
@@ -37,21 +42,15 @@ impl Game {
     };
   }
 
-  fn play_tick(&mut self) -> bool {
+  fn play_tick(&mut self) -> BoardMemento {
       clear_terminal();
       self.board.render();
       println!("{}'s turn", &self.current_player.as_str());
     
       let user_input = controller::get_user_input();
       match user_input {
-        UserInput::ENTER => {
-          let has_set_space = self.board.set_current_space(self.current_player);
-          has_set_space
-        },
-        _ => {
-          self.board.move_cursor(user_input);
-          false
-        },
+        UserInput::ENTER => self.board.set_current_space(self.current_player),
+        _ => self.board.move_cursor(user_input),
       }
   }
 

@@ -13,7 +13,7 @@ impl Cursor {
     }
   }
 
-  pub fn move_cursor(&mut self, user_input: UserInput) {
+  pub fn move_cursor(&mut self, user_input: &UserInput) {
     match user_input {
       UserInput::UP => {
         let is_zero = self.coordinates.0 == 0;
