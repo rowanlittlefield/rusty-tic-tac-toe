@@ -32,6 +32,14 @@ impl SetSpaceMemento {
   }
   
   pub fn has_set_space(&self) -> bool {
-    return self.has_set_space
+    self.has_set_space
+  }
+
+  pub fn get_coordinates(&self) -> (usize, usize) {
+    self.cursor_coordinates
+  }
+
+  pub fn get_space(&self) -> Space {
+    self.space
   }
 }

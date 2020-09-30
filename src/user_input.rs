@@ -4,4 +4,6 @@ pub enum UserInput {
   DOWN,
   LEFT,
   ENTER,
+  UNDO,
+  REDO,
 }

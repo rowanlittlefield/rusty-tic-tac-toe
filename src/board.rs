@@ -97,9 +97,36 @@ impl Board {
                 for (i, coordinates) in row.iter().enumerate() {
                     spaces[i] = self.grid[coordinates.0][coordinates.1];
                 }
-                spaces.iter().all(|&x| x == *player)
+                spaces.iter().all(|x| x == player)
             })        
         })
+    }
+
+    pub fn revert_set_space(&mut self, board_memento: &BoardMemento) {
+        match board_memento {
+            BoardMemento::SetSpace(set_space_memento) => {
+                let coordinates = set_space_memento.get_coordinates();
+                self.set_cursor_position(coordinates);
+                self.set_space(Space::Empty, coordinates)
+            },
+            _ => panic!("Only set space memento allowed!"),
+        };
+    }
+
+    fn set_cursor_position(&mut self, coordinates: (usize, usize)) {
+        self.cursor.set_cursor_coordinates(coordinates);
+    }
+
+    pub fn redo_set_space(&mut self, board_memento: &BoardMemento) {
+        match board_memento {
+            BoardMemento::SetSpace(set_space_memento) => {
+                let coordinates = set_space_memento.get_coordinates();
+                let space = set_space_memento.get_space();
+                self.set_cursor_position(coordinates);
+                self.set_space(space, coordinates)
+            },
+            _ => panic!("Only set space memento allowed!"),
+        };
     }
 }
 

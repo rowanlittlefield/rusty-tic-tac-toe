@@ -1,13 +1,14 @@
-use crate::space::Space;
 use crate::board::Board;
 use crate::board_memento::BoardMemento;
 use crate::controller;
+use crate::history::History;
 use crate::user_input::UserInput;
+use crate::space::Space;
 
 pub struct Game {
   board: Board,
   current_player: Space,
-  history: Vec<BoardMemento>,
+  history: History,
 }
 
 impl Game {
@@ -15,7 +16,7 @@ impl Game {
     Game {
       board: Board::new(),
       current_player: Space::X,
-      history: vec!(),
+      history: History::new(),
     }
   }
 
@@ -50,6 +51,14 @@ impl Game {
       let user_input = controller::get_user_input();
       match user_input {
         UserInput::ENTER => self.board.set_current_space(self.current_player),
+        UserInput::UNDO => {
+          self.history.back(&mut self.board);
+          BoardMemento::NullBoardMemento
+        },
+        UserInput::REDO => {
+          self.history.forward(&mut self.board);
+          BoardMemento::NullBoardMemento
+        },
         _ => self.board.move_cursor(user_input),
       }
   }

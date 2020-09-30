@@ -32,6 +32,10 @@ impl Cursor {
       _ => { panic!("Invalid UserInput for move_cursor"); },
     }
   }
+
+  pub fn set_cursor_coordinates(&mut self, coordinates: (usize, usize)) {
+    self.coordinates = coordinates;
+  }
 }
 
 #[cfg(test)]
