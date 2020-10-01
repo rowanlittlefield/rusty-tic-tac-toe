@@ -29,12 +29,12 @@ impl Game {
   }
 
   fn play_turn(&mut self) {
-    let mut next_history_item = BoardMemento::NullBoardMemento;
-    while !next_history_item.has_set_space() {
-      next_history_item = self.play_tick();
+    let mut memento = BoardMemento::NullBoardMemento;
+    while !memento.has_set_space() {
+      memento = self.play_tick();
     }
 
-    self.history.push(next_history_item);
+    self.history.push(memento);
 
     self.current_player = match self.current_player {
       Space::X => Space::O,
