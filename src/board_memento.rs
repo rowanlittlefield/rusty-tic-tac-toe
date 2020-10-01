@@ -8,7 +8,7 @@ pub enum BoardMemento {
 }
 
 impl BoardMemento {
-  pub fn has_set_space(&self) -> bool {
+  pub fn turn_over(&self) -> bool {
     match self {
       BoardMemento::SetSpace(set_space_memento) => set_space_memento.has_set_space(),
       _ => false

@@ -30,7 +30,7 @@ impl Game {
 
   fn play_turn(&mut self) {
     let mut memento = BoardMemento::NullBoardMemento;
-    while !memento.has_set_space() {
+    while !memento.turn_over() {
       memento = self.play_tick();
     }
 

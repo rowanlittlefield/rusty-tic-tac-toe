@@ -15,9 +15,9 @@ impl History {
   }
 
   pub fn push(&mut self, board_memento: BoardMemento) {
-    let is_successful_set_space_memento = board_memento.has_set_space();
-    if !is_successful_set_space_memento {
-      panic!("Only push successful set space mementos!");
+    let is_turn_over_memento = board_memento.turn_over();
+    if !is_turn_over_memento {
+      panic!("Only push mementos that correspond to the end of a turn!");
     }
     
     self.future_mementos.clear();
