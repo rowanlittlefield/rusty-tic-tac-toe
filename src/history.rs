@@ -24,27 +24,29 @@ impl History {
     self.past_mementos.push(board_memento);
   }
 
-  pub fn back(&mut self, board: &mut Board) {
+  pub fn back(&mut self, board: &mut Board) -> BoardMemento {
     let board_memento = self.past_mementos.pop();
-    match &board_memento {
+    match board_memento {
       Some(BoardMemento::SetSpace(_)) => {
         let unwrapped_memento = board_memento.unwrap();
-        board.revert_set_space(&unwrapped_memento);
+        let revert_memento = board.revert_set_space(&unwrapped_memento);
         self.future_mementos.push(unwrapped_memento);
+        revert_memento
       },
-      _ => {},
+      _ => BoardMemento::NullBoardMemento,
     }
   }
 
-  pub fn forward(&mut self, board: &mut Board) {
+  pub fn forward(&mut self, board: &mut Board) -> BoardMemento {
     let board_memento = self.future_mementos.pop();
-    match &board_memento {
+    match board_memento {
       Some(BoardMemento::SetSpace(_)) => {
         let unwrapped_memento = board_memento.unwrap();
-        board.redo_set_space(&unwrapped_memento);
+        let redo_memento = board.redo_set_space(&unwrapped_memento);
         self.past_mementos.push(unwrapped_memento);
+        redo_memento
       },
-      _ => {},
+      _ => BoardMemento::NullBoardMemento,
     }
   }
 }

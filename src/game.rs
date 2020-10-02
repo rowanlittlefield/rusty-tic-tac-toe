@@ -51,14 +51,8 @@ impl Game {
       let user_input = controller::get_user_input();
       match user_input {
         UserInput::ENTER => self.board.set_current_space(self.current_player),
-        UserInput::UNDO => {
-          self.history.back(&mut self.board);
-          BoardMemento::NullBoardMemento
-        },
-        UserInput::REDO => {
-          self.history.forward(&mut self.board);
-          BoardMemento::NullBoardMemento
-        },
+        UserInput::UNDO => self.history.back(&mut self.board),
+        UserInput::REDO => self.history.forward(&mut self.board),
         _ => self.board.move_cursor(user_input),
       }
   }

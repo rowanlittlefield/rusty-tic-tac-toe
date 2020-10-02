@@ -102,7 +102,7 @@ impl Board {
         })
     }
 
-    pub fn revert_set_space(&mut self, board_memento: &BoardMemento) {
+    pub fn revert_set_space(&mut self, board_memento: &BoardMemento) -> BoardMemento {
         match board_memento {
             BoardMemento::SetSpace(set_space_memento) => {
                 let coordinates = set_space_memento.get_coordinates();
@@ -111,13 +111,15 @@ impl Board {
             },
             _ => panic!("Only set space memento allowed!"),
         };
+
+        BoardMemento::NullBoardMemento
     }
 
     fn set_cursor_position(&mut self, coordinates: (usize, usize)) {
         self.cursor.set_cursor_coordinates(coordinates);
     }
 
-    pub fn redo_set_space(&mut self, board_memento: &BoardMemento) {
+    pub fn redo_set_space(&mut self, board_memento: &BoardMemento) -> BoardMemento {
         match board_memento {
             BoardMemento::SetSpace(set_space_memento) => {
                 let coordinates = set_space_memento.get_coordinates();
@@ -127,6 +129,8 @@ impl Board {
             },
             _ => panic!("Only set space memento allowed!"),
         };
+
+        BoardMemento::NullBoardMemento
     }
 }
 
