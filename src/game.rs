@@ -46,7 +46,8 @@ impl Game {
   fn play_tick(&mut self) -> BoardMemento {
       clear_terminal();
       self.board.render();
-      println!("{}'s turn", &self.current_player.as_str());
+      println!("Turn: {}", self.history.number_of_elapsed_turns() + 1);
+      println!("Current player: {}", self.current_player.as_str());
     
       let user_input = controller::get_user_input();
       match user_input {

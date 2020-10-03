@@ -14,6 +14,10 @@ impl History {
     }
   }
 
+  pub fn number_of_elapsed_turns(&self) -> usize {
+    self.past_mementos.len()
+  }
+
   pub fn push(&mut self, board_memento: BoardMemento) {
     let is_turn_over_memento = board_memento.turn_over();
     if !is_turn_over_memento {
