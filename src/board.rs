@@ -139,7 +139,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn move_cursor() {
+    fn move_cursor_should_move_the_cursor() {
         let mut board = Board::new();
         let expected = (0, 1);
 
@@ -150,23 +150,45 @@ mod tests {
     }
 
     #[test]
-    fn set_current_space_once_should_return_true() {
+    fn move_cursor_should_return_a_board_memento() {
         let mut board = Board::new();
         let expected = true;
 
-        let actual = board.set_current_space(Space::X);
+        let memento = board.move_cursor(UserInput::RIGHT);
 
+        let actual = match memento {
+            BoardMemento::MoveCursor(UserInput::RIGHT) => true,
+            _ => false
+        };
         assert_eq!(actual, expected);
     }
 
     #[test]
-    fn set_current_space_twice_should_return_false() {
+    fn set_current_space_once_should_return_correct_memento() {
         let mut board = Board::new();
-        let expected = false;
+        let expected = true;
+
+        let memento = board.set_current_space(Space::X);
+
+        let actual = match memento {
+            BoardMemento::SetSpace(_) => memento.turn_over(),
+            _ => false,
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn set_current_space_twice_should_return_correct_memento() {
+        let mut board = Board::new();
+        let expected = true;
 
         board.set_current_space(Space::X);
-        let actual = board.set_current_space(Space::O);
+        let memento = board.set_current_space(Space::O);
 
+        let actual = match memento {
+            BoardMemento::SetSpace(_) => !memento.turn_over(),
+            _ => false,
+        };
         assert_eq!(actual, expected);
     }
 
