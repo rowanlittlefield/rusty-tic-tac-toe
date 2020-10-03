@@ -60,7 +60,7 @@ mod tests {
     };
     let expected = (0, 0);
 
-    cursor.move_cursor(UserInput::UP);
+    cursor.move_cursor(&UserInput::UP);
 
     let actual = cursor.coordinates;
     assert_eq!(actual, expected);
@@ -74,7 +74,7 @@ mod tests {
     };
     let expected = (1, 0);
 
-    cursor.move_cursor(UserInput::UP);
+    cursor.move_cursor(&UserInput::UP);
 
     let actual = cursor.coordinates;
     assert_eq!(actual, expected);
@@ -88,7 +88,7 @@ mod tests {
     };
     let expected = (0, 1);
 
-    cursor.move_cursor(UserInput::RIGHT);
+    cursor.move_cursor(&UserInput::RIGHT);
 
     let actual = cursor.coordinates;
     assert_eq!(actual, expected);
@@ -102,7 +102,7 @@ mod tests {
     };
     let expected = (0, 0);
 
-    cursor.move_cursor(UserInput::RIGHT);
+    cursor.move_cursor(&UserInput::RIGHT);
 
     let actual = cursor.coordinates;
     assert_eq!(actual, expected);
@@ -116,7 +116,7 @@ mod tests {
     };
     let expected = (1, 0);
 
-    cursor.move_cursor(UserInput::DOWN);
+    cursor.move_cursor(&UserInput::DOWN);
 
     let actual = cursor.coordinates;
     assert_eq!(actual, expected);
@@ -130,7 +130,7 @@ mod tests {
     };
     let expected = (0, 0);
 
-    cursor.move_cursor(UserInput::DOWN);
+    cursor.move_cursor(&UserInput::DOWN);
 
     let actual = cursor.coordinates;
     assert_eq!(actual, expected);
@@ -144,7 +144,7 @@ mod tests {
     };
     let expected = (0, 0);
 
-    cursor.move_cursor(UserInput::LEFT);
+    cursor.move_cursor(&UserInput::LEFT);
 
     let actual = cursor.coordinates;
     assert_eq!(actual, expected);
@@ -158,7 +158,7 @@ mod tests {
     };
     let expected = (0, 1);
 
-    cursor.move_cursor(UserInput::LEFT);
+    cursor.move_cursor(&UserInput::LEFT);
 
     let actual = cursor.coordinates;
     assert_eq!(actual, expected);
@@ -172,6 +172,18 @@ mod tests {
       coordinates: (0, 0),
     };
 
-    cursor.move_cursor(UserInput::ENTER);
-  } 
+    cursor.move_cursor(&UserInput::ENTER);
+  }
+
+  #[test]
+  fn set_cursor_coordinates() {
+    let board_dimensions = (2, 2);
+    let cursor = Cursor::new(board_dimensions);
+    let expected = (2, 2);
+
+    cursor.set_cursor_coordinates(expected);
+
+    let actual = cursor.coordinates;
+    assert_eq!(actual, expected);
+  }
 }
