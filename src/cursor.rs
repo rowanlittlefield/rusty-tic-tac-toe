@@ -178,7 +178,7 @@ mod tests {
   #[test]
   fn set_cursor_coordinates() {
     let board_dimensions = (2, 2);
-    let cursor = Cursor::new(board_dimensions);
+    let mut cursor = Cursor::new(board_dimensions);
     let expected = (2, 2);
 
     cursor.set_cursor_coordinates(expected);
