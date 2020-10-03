@@ -35,9 +35,11 @@ impl Board {
     }
     
     pub fn render(&self) {       
+        let cursor_coordinates = self.cursor.get_coordinates();
+        
         for (i, row) in self.grid.iter().enumerate() {
             for (j, space) in row.iter().enumerate() {
-                let is_cursor_pos = self.cursor.coordinates == (i, j);
+                let is_cursor_pos = cursor_coordinates == (i, j);
                 let colored_space = match is_cursor_pos {
                     true => Colour::Black.on(Colour::Yellow).paint(space.as_str()),
                     false => Colour::White.on(Colour::Black).paint(space.as_str()),
@@ -60,12 +62,13 @@ impl Board {
     }
 
     pub fn set_current_space(&mut self, space: Space) -> BoardMemento {
-        let can_set_space = !self.is_space_occupied(&self.cursor.coordinates);
+        let cursor_coordinates = self.cursor.get_coordinates();
+        let can_set_space = !self.is_space_occupied(&cursor_coordinates);
         if can_set_space {
-            self.set_space(space, self.cursor.coordinates)
+            self.set_space(space, cursor_coordinates)
         }
 
-        let set_space_memento = SetSpaceMemento::new(self.cursor.coordinates, can_set_space, space);
+        let set_space_memento = SetSpaceMemento::new(cursor_coordinates, can_set_space, space);
         BoardMemento::SetSpace(set_space_memento)
     }
 
@@ -116,7 +119,7 @@ impl Board {
     }
 
     fn set_cursor_position(&mut self, coordinates: (usize, usize)) {
-        self.cursor.set_cursor_coordinates(coordinates);
+        self.cursor.set_coordinates(coordinates);
     }
 
     pub fn redo_set_space(&mut self, board_memento: &BoardMemento) -> BoardMemento {
@@ -145,7 +148,7 @@ mod tests {
 
         board.move_cursor(UserInput::RIGHT);
 
-        let actual = board.cursor.coordinates;
+        let actual = board.cursor.get_coordinates();
         assert_eq!(actual, expected);
     }
 
