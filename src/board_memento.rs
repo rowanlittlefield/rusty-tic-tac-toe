@@ -82,6 +82,7 @@ mod tests {
     let expected = false;
 
     let actual = board_memento.turn_over();
+
     assert_eq!(actual, expected);
   }
 
@@ -91,6 +92,7 @@ mod tests {
     let expected = false;
 
     let actual = board_memento.turn_over();
+
     assert_eq!(actual, expected);
   }
 }
