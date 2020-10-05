@@ -43,3 +43,54 @@ impl SetSpaceMemento {
     self.space
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn board_memento_turn_over_return_true() {
+    let cursor_coordinates = (0, 0);
+    let has_set_space = true;
+    let space = Space::X;
+    let set_space_memento = SetSpaceMemento::new(cursor_coordinates, has_set_space, space);
+    let board_memento = BoardMemento::SetSpace(set_space_memento);
+    let expected = true;
+
+    let actual = board_memento.turn_over();
+
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn board_memento_turn_over_return_false_scenario_1() {
+    let cursor_coordinates = (0, 0);
+    let has_set_space = false;
+    let space = Space::X;
+    let set_space_memento = SetSpaceMemento::new(cursor_coordinates, has_set_space, space);
+    let board_memento = BoardMemento::SetSpace(set_space_memento);
+    let expected = false;
+
+    let actual = board_memento.turn_over();
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn board_memento_turn_over_return_false_scenario_2() {
+    let user_input = UserInput::DOWN;
+    let board_memento = BoardMemento::MoveCursor(user_input);
+    let expected = false;
+
+    let actual = board_memento.turn_over();
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn board_memento_turn_over_return_false_scenario_3() {
+    let board_memento = BoardMemento::NullBoardMemento;
+    let expected = false;
+
+    let actual = board_memento.turn_over();
+    assert_eq!(actual, expected);
+  }
+}
