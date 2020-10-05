@@ -54,3 +54,40 @@ impl History {
     }
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use crate::space::Space;
+  use crate::board_memento::SetSpaceMemento;
+
+  fn create_board_memento(cursor_coordinates: (usize, usize)) -> BoardMemento {
+    let has_set_space = true;
+    let space = Space::X;
+    let set_space_memento = SetSpaceMemento::new(cursor_coordinates, has_set_space, space);
+    BoardMemento::SetSpace(set_space_memento)
+  }
+
+  #[test]
+  fn number_of_elapsed_turns_new_history() {
+    let history = History::new();
+    let expected = 0;
+
+    let actual = history.number_of_elapsed_turns();
+
+    assert_eq!(expected, actual);
+  }
+
+  #[test]
+  fn number_of_elapsed_turns_push() {
+    let mut history = History::new();
+    let cursor_coordinates = (0, 0);
+    let board_memento = create_board_memento(cursor_coordinates);
+    let expected = 1;
+
+    history.push(board_memento);
+    let actual = history.number_of_elapsed_turns();
+
+    assert_eq!(expected, actual);
+  }
+}
