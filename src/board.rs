@@ -264,4 +264,10 @@ mod tests {
         });
         assert_eq!(expected, actual);
     }
+
+    #[test]
+    #[ignore]
+    fn revert_set_space_should_update_cursor_coordinates() {
+
+    }
 }

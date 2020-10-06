@@ -90,4 +90,22 @@ mod tests {
 
     assert_eq!(expected, actual);
   }
+
+  #[test]
+  fn number_of_elapsed_turns_back_and_push() {
+    let mut board = Board::new();
+    let mut history = History::new();
+    let cursor_coordinates_1 = (0, 0);
+    let board_memento_1 = create_board_memento(cursor_coordinates_1);
+    let cursor_coordinates_2 = (1, 0);
+    let board_memento_2 = create_board_memento(cursor_coordinates_2);
+    let expected = 1;
+
+    history.push(board_memento_1);
+    history.back(&mut board);
+    history.push(board_memento_2);
+    let actual = history.number_of_elapsed_turns();
+
+    assert_eq!(expected, actual);
+  }
 }
