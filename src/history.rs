@@ -61,7 +61,7 @@ mod tests {
   use crate::space::Space;
   use crate::board_memento::SetSpaceMemento;
 
-  fn create_board_memento(cursor_coordinates: (usize, usize)) -> BoardMemento {
+  fn create_set_space_board_memento(cursor_coordinates: (usize, usize)) -> BoardMemento {
     let has_set_space = true;
     let space = Space::X;
     let set_space_memento = SetSpaceMemento::new(cursor_coordinates, has_set_space, space);
@@ -82,7 +82,7 @@ mod tests {
   fn number_of_elapsed_turns_push() {
     let mut history = History::new();
     let cursor_coordinates = (0, 0);
-    let board_memento = create_board_memento(cursor_coordinates);
+    let board_memento = create_set_space_board_memento(cursor_coordinates);
     let expected = 1;
 
     history.push(board_memento);
@@ -96,15 +96,111 @@ mod tests {
     let mut board = Board::new();
     let mut history = History::new();
     let cursor_coordinates_1 = (0, 0);
-    let board_memento_1 = create_board_memento(cursor_coordinates_1);
+    let board_memento_1 = create_set_space_board_memento(cursor_coordinates_1);
     let cursor_coordinates_2 = (1, 0);
-    let board_memento_2 = create_board_memento(cursor_coordinates_2);
+    let board_memento_2 = create_set_space_board_memento(cursor_coordinates_2);
     let expected = 1;
 
     history.push(board_memento_1);
     history.back(&mut board);
     history.push(board_memento_2);
     let actual = history.number_of_elapsed_turns();
+
+    assert_eq!(expected, actual);
+  }
+
+  #[test]
+  fn back_should_enable_setting_board_space_again() {
+    let mut board = Board::new();
+    let mut history = History::new();
+    let expected = true;
+
+    let board_memento = board.set_current_space(Space::X);
+    history.push(board_memento);
+    history.back(&mut board);
+    let board_memento = board.set_current_space(Space::X);
+    let actual = board_memento.turn_over();
+
+    assert_eq!(expected, actual);
+  }
+
+  #[test]
+  fn back_should_return_correct_memento_scenario_1() {
+    let mut board = Board::new();
+    let mut history = History::new();
+    let expected = true;
+
+    let board_memento = board.set_current_space(Space::X);
+    history.push(board_memento);
+    let board_memento = history.back(&mut board);
+    let actual = match board_memento {
+      BoardMemento::NullBoardMemento => true,
+      _ => false,
+    };
+
+    assert_eq!(expected, actual);
+  }
+
+  #[test]
+  fn back_should_return_correct_memento_scenario_2() {
+    let mut board = Board::new();
+    let mut history = History::new();
+    let expected = true;
+
+    let board_memento = history.back(&mut board);
+    let actual = match board_memento {
+      BoardMemento::NullBoardMemento => true,
+      _ => false,
+    };
+
+    assert_eq!(expected, actual);
+  }
+
+  #[test]
+  fn forward_should_disable_setting_board_space_again() {
+    let mut board = Board::new();
+    let mut history = History::new();
+    let expected = false;
+
+    let board_memento = board.set_current_space(Space::X);
+    history.push(board_memento);
+    history.back(&mut board);
+    history.forward(&mut board);
+    let board_memento = board.set_current_space(Space::X);
+    let actual = board_memento.turn_over();
+
+    assert_eq!(expected, actual);
+    }
+
+  #[test]
+  fn forward_should_return_correct_memento_scenario_1() {
+    let mut board = Board::new();
+    let mut history = History::new();
+    let expected = true;
+
+    let board_memento = board.set_current_space(Space::X);
+    history.push(board_memento);
+    history.back(&mut board);
+    let board_memento = history.forward(&mut board);
+    let actual = match board_memento {
+      BoardMemento::NullBoardMemento => true,
+      _ => false,
+    };
+
+    assert_eq!(expected, actual);
+  }
+
+  #[test]
+  fn forward_should_return_correct_memento_scenario_2() {
+    let mut board = Board::new();
+    let mut history = History::new();
+    let expected = true;
+
+    let board_memento = history.forward(&mut board);
+    let actual = match board_memento {
+      BoardMemento::NullBoardMemento => true,
+      _ => false,
+    };
 
     assert_eq!(expected, actual);
   }
