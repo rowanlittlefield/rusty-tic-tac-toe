@@ -266,8 +266,61 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn revert_set_space_should_update_cursor_coordinates() {
+        let mut board = Board::new();
+        let expected = (0, 1);
 
+        board.move_cursor(UserInput::RIGHT);
+        let board_memento = board.set_current_space(Space::X);
+        board.move_cursor(UserInput::RIGHT);
+        board.revert_set_space(&board_memento);
+
+        let actual = board.cursor.get_coordinates();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn revert_set_space_should_enable_setting_space_again() {
+        let mut board = Board::new();
+        let expected = true;
+
+        board.move_cursor(UserInput::RIGHT);
+        let board_memento = board.set_current_space(Space::X);
+        board.move_cursor(UserInput::RIGHT);
+        board.revert_set_space(&board_memento);
+        let board_memento = board.set_current_space(Space::X);
+
+        let actual = board_memento.turn_over();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn redo_set_space_should_update_cursor_coordinates() {
+        let mut board = Board::new();
+        let expected = (0, 1);
+
+        board.move_cursor(UserInput::RIGHT);
+        let board_memento = board.set_current_space(Space::X);
+        board.revert_set_space(&board_memento);
+        board.move_cursor(UserInput::DOWN);
+        board.redo_set_space(&board_memento);
+
+        let actual = board.cursor.get_coordinates();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn redo_set_space_should_disable_setting_space_again() {
+        let mut board = Board::new();
+        let expected = false;
+
+        board.move_cursor(UserInput::RIGHT);
+        let board_memento = board.set_current_space(Space::X);
+        board.move_cursor(UserInput::RIGHT);
+        board.redo_set_space(&board_memento);
+        let board_memento = board.set_current_space(Space::X);
+
+        let actual = board_memento.turn_over();
+        assert_eq!(actual, expected);
     }
 }
