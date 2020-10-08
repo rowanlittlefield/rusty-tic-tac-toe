@@ -2,7 +2,7 @@ use crate::user_input::UserInput;
 
 pub struct Cursor {
   board_dimensions: (usize, usize),
-  pub coordinates: (usize, usize),
+  coordinates: (usize, usize),
 }
 
 impl Cursor {
@@ -13,7 +13,7 @@ impl Cursor {
     }
   }
 
-  pub fn move_cursor(&mut self, user_input: UserInput) {
+  pub fn move_cursor(&mut self, user_input: &UserInput) {
     match user_input {
       UserInput::UP => {
         let is_zero = self.coordinates.0 == 0;
@@ -32,6 +32,14 @@ impl Cursor {
       _ => { panic!("Invalid UserInput for move_cursor"); },
     }
   }
+
+  pub fn set_coordinates(&mut self, coordinates: (usize, usize)) {
+    self.coordinates = coordinates;
+  }
+
+  pub fn get_coordinates(&self) -> (usize, usize) {
+    self.coordinates
+  }
 }
 
 #[cfg(test)]
@@ -44,7 +52,7 @@ mod tests {
     let cursor = Cursor::new(board_dimensions);
     let expected = (0, 0);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -56,9 +64,9 @@ mod tests {
     };
     let expected = (0, 0);
 
-    cursor.move_cursor(UserInput::UP);
+    cursor.move_cursor(&UserInput::UP);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -70,9 +78,9 @@ mod tests {
     };
     let expected = (1, 0);
 
-    cursor.move_cursor(UserInput::UP);
+    cursor.move_cursor(&UserInput::UP);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -84,9 +92,9 @@ mod tests {
     };
     let expected = (0, 1);
 
-    cursor.move_cursor(UserInput::RIGHT);
+    cursor.move_cursor(&UserInput::RIGHT);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -98,9 +106,9 @@ mod tests {
     };
     let expected = (0, 0);
 
-    cursor.move_cursor(UserInput::RIGHT);
+    cursor.move_cursor(&UserInput::RIGHT);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -112,9 +120,9 @@ mod tests {
     };
     let expected = (1, 0);
 
-    cursor.move_cursor(UserInput::DOWN);
+    cursor.move_cursor(&UserInput::DOWN);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -126,9 +134,9 @@ mod tests {
     };
     let expected = (0, 0);
 
-    cursor.move_cursor(UserInput::DOWN);
+    cursor.move_cursor(&UserInput::DOWN);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -140,9 +148,9 @@ mod tests {
     };
     let expected = (0, 0);
 
-    cursor.move_cursor(UserInput::LEFT);
+    cursor.move_cursor(&UserInput::LEFT);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -154,9 +162,9 @@ mod tests {
     };
     let expected = (0, 1);
 
-    cursor.move_cursor(UserInput::LEFT);
+    cursor.move_cursor(&UserInput::LEFT);
 
-    let actual = cursor.coordinates;
+    let actual = cursor.get_coordinates();
     assert_eq!(actual, expected);
   }
 
@@ -168,6 +176,18 @@ mod tests {
       coordinates: (0, 0),
     };
 
-    cursor.move_cursor(UserInput::ENTER);
-  } 
+    cursor.move_cursor(&UserInput::ENTER);
+  }
+
+  #[test]
+  fn set_coordinates() {
+    let board_dimensions = (2, 2);
+    let mut cursor = Cursor::new(board_dimensions);
+    let expected = (2, 2);
+
+    cursor.set_coordinates(expected);
+
+    let actual = cursor.get_coordinates();
+    assert_eq!(actual, expected);
+  }
 }

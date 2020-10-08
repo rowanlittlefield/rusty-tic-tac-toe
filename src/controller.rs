@@ -32,6 +32,8 @@ fn map_input(input: &String) -> Option<UserInput> {
     "d" => Some(UserInput::RIGHT),
     "s" => Some(UserInput::DOWN), 
     "a" => Some(UserInput::LEFT),
+    "u" => Some(UserInput::UNDO),
+    "r" => Some(UserInput::REDO),
     "" => Some(UserInput::ENTER),
     _ => None,
   }

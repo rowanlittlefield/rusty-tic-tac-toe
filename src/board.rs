@@ -1,6 +1,7 @@
 use ansi_term::Colour;
-use crate::space::Space;
+use crate::board_memento::{BoardMemento, SetSpaceMemento};
 use crate::cursor::Cursor;
+use crate::space::Space;
 use crate::user_input::UserInput;
 
 const ROWS: [[(usize, usize);3];8] = [
@@ -34,9 +35,11 @@ impl Board {
     }
     
     pub fn render(&self) {       
+        let cursor_coordinates = self.cursor.get_coordinates();
+        
         for (i, row) in self.grid.iter().enumerate() {
             for (j, space) in row.iter().enumerate() {
-                let is_cursor_pos = self.cursor.coordinates == (i, j);
+                let is_cursor_pos = cursor_coordinates == (i, j);
                 let colored_space = match is_cursor_pos {
                     true => Colour::Black.on(Colour::Yellow).paint(space.as_str()),
                     false => Colour::White.on(Colour::Black).paint(space.as_str()),
@@ -53,17 +56,20 @@ impl Board {
         }
     }
 
-    pub fn move_cursor(&mut self, user_input: UserInput) {
-        self.cursor.move_cursor(user_input);
+    pub fn move_cursor(&mut self, user_input: UserInput) -> BoardMemento {
+        self.cursor.move_cursor(&user_input);
+        BoardMemento::MoveCursor(user_input)
     }
 
-    pub fn set_current_space(&mut self, space: Space) -> bool {
-        let has_set_space = !self.is_space_occupied(&self.cursor.coordinates);
-        if has_set_space {
-            self.set_space(space, self.cursor.coordinates)
+    pub fn set_current_space(&mut self, space: Space) -> BoardMemento {
+        let cursor_coordinates = self.cursor.get_coordinates();
+        let can_set_space = !self.is_space_occupied(&cursor_coordinates);
+        if can_set_space {
+            self.set_space(space, cursor_coordinates)
         }
 
-        has_set_space
+        let set_space_memento = SetSpaceMemento::new(cursor_coordinates, can_set_space, space);
+        BoardMemento::SetSpace(set_space_memento)
     }
 
     fn is_space_occupied(&self, coordinates: &(usize, usize)) -> bool {
@@ -94,9 +100,40 @@ impl Board {
                 for (i, coordinates) in row.iter().enumerate() {
                     spaces[i] = self.grid[coordinates.0][coordinates.1];
                 }
-                spaces.iter().all(|&x| x == *player)
+                spaces.iter().all(|x| x == player)
             })        
         })
+    }
+
+    pub fn revert_set_space(&mut self, board_memento: &BoardMemento) -> BoardMemento {
+        match board_memento {
+            BoardMemento::SetSpace(set_space_memento) => {
+                let coordinates = set_space_memento.get_coordinates();
+                self.set_cursor_position(coordinates);
+                self.set_space(Space::Empty, coordinates)
+            },
+            _ => panic!("Only set space memento allowed!"),
+        };
+
+        BoardMemento::NullBoardMemento
+    }
+
+    fn set_cursor_position(&mut self, coordinates: (usize, usize)) {
+        self.cursor.set_coordinates(coordinates);
+    }
+
+    pub fn redo_set_space(&mut self, board_memento: &BoardMemento) -> BoardMemento {
+        match board_memento {
+            BoardMemento::SetSpace(set_space_memento) => {
+                let coordinates = set_space_memento.get_coordinates();
+                let space = set_space_memento.get_space();
+                self.set_cursor_position(coordinates);
+                self.set_space(space, coordinates)
+            },
+            _ => panic!("Only set space memento allowed!"),
+        };
+
+        BoardMemento::NullBoardMemento
     }
 }
 
@@ -105,34 +142,56 @@ mod tests {
     use super::*;
 
     #[test]
-    fn move_cursor() {
+    fn move_cursor_should_move_the_cursor() {
         let mut board = Board::new();
         let expected = (0, 1);
 
         board.move_cursor(UserInput::RIGHT);
 
-        let actual = board.cursor.coordinates;
+        let actual = board.cursor.get_coordinates();
         assert_eq!(actual, expected);
     }
 
     #[test]
-    fn set_current_space_once_should_return_true() {
+    fn move_cursor_should_return_a_board_memento() {
         let mut board = Board::new();
         let expected = true;
 
-        let actual = board.set_current_space(Space::X);
+        let memento = board.move_cursor(UserInput::RIGHT);
 
+        let actual = match memento {
+            BoardMemento::MoveCursor(UserInput::RIGHT) => true,
+            _ => false
+        };
         assert_eq!(actual, expected);
     }
 
     #[test]
-    fn set_current_space_twice_should_return_false() {
+    fn set_current_space_once_should_return_correct_memento() {
         let mut board = Board::new();
-        let expected = false;
+        let expected = true;
+
+        let memento = board.set_current_space(Space::X);
+
+        let actual = match memento {
+            BoardMemento::SetSpace(_) => memento.turn_over(),
+            _ => false,
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn set_current_space_twice_should_return_correct_memento() {
+        let mut board = Board::new();
+        let expected = true;
 
         board.set_current_space(Space::X);
-        let actual = board.set_current_space(Space::O);
+        let memento = board.set_current_space(Space::O);
 
+        let actual = match memento {
+            BoardMemento::SetSpace(_) => !memento.turn_over(),
+            _ => false,
+        };
         assert_eq!(actual, expected);
     }
 
@@ -204,5 +263,64 @@ mod tests {
             })
         });
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn revert_set_space_should_update_cursor_coordinates() {
+        let mut board = Board::new();
+        let expected = (0, 1);
+
+        board.move_cursor(UserInput::RIGHT);
+        let board_memento = board.set_current_space(Space::X);
+        board.move_cursor(UserInput::RIGHT);
+        board.revert_set_space(&board_memento);
+
+        let actual = board.cursor.get_coordinates();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn revert_set_space_should_enable_setting_space_again() {
+        let mut board = Board::new();
+        let expected = true;
+
+        board.move_cursor(UserInput::RIGHT);
+        let board_memento = board.set_current_space(Space::X);
+        board.move_cursor(UserInput::RIGHT);
+        board.revert_set_space(&board_memento);
+        let board_memento = board.set_current_space(Space::X);
+
+        let actual = board_memento.turn_over();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn redo_set_space_should_update_cursor_coordinates() {
+        let mut board = Board::new();
+        let expected = (0, 1);
+
+        board.move_cursor(UserInput::RIGHT);
+        let board_memento = board.set_current_space(Space::X);
+        board.revert_set_space(&board_memento);
+        board.move_cursor(UserInput::DOWN);
+        board.redo_set_space(&board_memento);
+
+        let actual = board.cursor.get_coordinates();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn redo_set_space_should_disable_setting_space_again() {
+        let mut board = Board::new();
+        let expected = false;
+
+        board.move_cursor(UserInput::RIGHT);
+        let board_memento = board.set_current_space(Space::X);
+        board.move_cursor(UserInput::RIGHT);
+        board.redo_set_space(&board_memento);
+        let board_memento = board.set_current_space(Space::X);
+
+        let actual = board_memento.turn_over();
+        assert_eq!(actual, expected);
     }
 }
