@@ -115,11 +115,7 @@ impl Board {
             _ => panic!("Only set space memento allowed!"),
         };
 
-        BoardMemento::NullBoardMemento
-    }
-
-    fn set_cursor_position(&mut self, coordinates: (usize, usize)) {
-        self.cursor.set_coordinates(coordinates);
+        BoardMemento::RevertSetSpace
     }
 
     pub fn redo_set_space(&mut self, board_memento: &BoardMemento) -> BoardMemento {
@@ -133,7 +129,11 @@ impl Board {
             _ => panic!("Only set space memento allowed!"),
         };
 
-        BoardMemento::NullBoardMemento
+        BoardMemento::RedoSetSpace
+    }
+
+    fn set_cursor_position(&mut self, coordinates: (usize, usize)) {
+        self.cursor.set_coordinates(coordinates);
     }
 }
 
@@ -295,6 +295,21 @@ mod tests {
     }
 
     #[test]
+    fn revert_set_space_should_return_the_correct_board_memento() {
+        let mut board = Board::new();
+        let expected = true;
+
+        let board_memento = board.set_current_space(Space::X);
+        let board_memento = board.revert_set_space(&board_memento);
+
+        let actual = match board_memento {
+            BoardMemento::RevertSetSpace => true,
+            _ => false,
+        };
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn redo_set_space_should_update_cursor_coordinates() {
         let mut board = Board::new();
         let expected = (0, 1);
@@ -321,6 +336,22 @@ mod tests {
         let board_memento = board.set_current_space(Space::X);
 
         let actual = board_memento.turn_over();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn redo_set_space_should_return_the_correct_board_memento() {
+        let mut board = Board::new();
+        let expected = true;
+
+        let board_memento = board.set_current_space(Space::X);
+        board.revert_set_space(&board_memento);
+        let board_memento = board.redo_set_space(&board_memento);
+
+        let actual = match board_memento {
+            BoardMemento::RedoSetSpace => true,
+            _ => false,
+        };
         assert_eq!(actual, expected);
     }
 }

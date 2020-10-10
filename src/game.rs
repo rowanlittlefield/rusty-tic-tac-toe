@@ -34,7 +34,9 @@ impl Game {
       memento = self.play_tick();
     }
 
-    self.history.push(memento);
+    if let BoardMemento::SetSpace(_) = memento {
+      self.history.push(memento);
+    }
 
     self.current_player = match self.current_player {
       Space::X => Space::O,
