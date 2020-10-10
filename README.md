@@ -4,7 +4,7 @@ A command line application written in Rust for playing Tic-Tac-Toe.
 
 ## Screenshot
 
-(Insert Screenshot)
+![Screen Shot 2020-10-10 at 1 59 42 PM](https://user-images.githubusercontent.com/30376211/95661877-e54f0a00-0b00-11eb-9524-4ae50933be81.png)
 
 ## How to Run
 
