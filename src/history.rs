@@ -134,7 +134,7 @@ mod tests {
     history.push(board_memento);
     let board_memento = history.back(&mut board);
     let actual = match board_memento {
-      BoardMemento::NullBoardMemento => true,
+      BoardMemento::RevertSetSpace => true,
       _ => false,
     };
 
@@ -183,7 +183,7 @@ mod tests {
     history.back(&mut board);
     let board_memento = history.forward(&mut board);
     let actual = match board_memento {
-      BoardMemento::NullBoardMemento => true,
+      BoardMemento::RedoSetSpace => true,
       _ => false,
     };
 

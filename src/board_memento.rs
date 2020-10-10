@@ -93,6 +93,26 @@ mod tests {
 
   #[test]
   fn board_memento_turn_over_return_false_scenario_3() {
+    let board_memento = BoardMemento::RevertSetSpace;
+    let expected = true;
+
+    let actual = board_memento.turn_over();
+
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn board_memento_turn_over_return_false_scenario_4() {
+    let board_memento = BoardMemento::RedoSetSpace;
+    let expected = true;
+
+    let actual = board_memento.turn_over();
+
+    assert_eq!(actual, expected);
+  }
+
+  #[test]
+  fn board_memento_turn_over_return_false_scenario_5() {
     let board_memento = BoardMemento::NullBoardMemento;
     let expected = false;
 
