@@ -4,7 +4,7 @@ A command line application written in Rust for playing Tic-Tac-Toe.
 
 ## Screenshot
 
-(Insert Screenshot)
+![Screen Shot 2020-10-10 at 1 59 42 PM](https://user-images.githubusercontent.com/30376211/95661877-e54f0a00-0b00-11eb-9524-4ae50933be81.png)
 
 ## How to Run
 
@@ -12,7 +12,7 @@ A command line application written in Rust for playing Tic-Tac-Toe.
 
 2. [Install Rust and Cargo.](https://doc.rust-lang.org/book/ch01-01-installation.html)
 
-3. Navigate to the cloned project directory in your command line. The game can be run from this directory using `cargo run`. The unit tests for the project can be executed using `cargo test`. To compile the project to an executable, run `cargo build --release`. The executable can be found in `./target/release`. On macOS, the executable will be `tic_tac_toe`, which you can run from your command line in the project root directory via `./target/release/tic_tac_toe`.
+3. Navigate to the cloned project directory in your command line. The game can be run from this directory using `cargo run`. The unit tests for the project can be executed using `cargo test`. To compile the project to an executable, run `cargo build --release`. The executable can be found in `./target/release`. On macOS, the executable will have the name `tic_tac_toe`, which you can run from your command line in the project root directory via `./target/release/tic_tac_toe`.
 
 ## Functionality & MVP
 
