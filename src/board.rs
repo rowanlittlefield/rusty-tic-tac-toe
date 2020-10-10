@@ -115,11 +115,7 @@ impl Board {
             _ => panic!("Only set space memento allowed!"),
         };
 
-        BoardMemento::NullBoardMemento
-    }
-
-    fn set_cursor_position(&mut self, coordinates: (usize, usize)) {
-        self.cursor.set_coordinates(coordinates);
+        BoardMemento::RevertSetSpace
     }
 
     pub fn redo_set_space(&mut self, board_memento: &BoardMemento) -> BoardMemento {
@@ -133,7 +129,11 @@ impl Board {
             _ => panic!("Only set space memento allowed!"),
         };
 
-        BoardMemento::NullBoardMemento
+        BoardMemento::RedoSetSpace
+    }
+
+    fn set_cursor_position(&mut self, coordinates: (usize, usize)) {
+        self.cursor.set_coordinates(coordinates);
     }
 }
 

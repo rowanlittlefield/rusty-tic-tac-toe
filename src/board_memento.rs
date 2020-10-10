@@ -4,6 +4,8 @@ use crate::user_input::UserInput;
 pub enum BoardMemento {
   SetSpace(SetSpaceMemento),
   MoveCursor(UserInput),
+  RevertSetSpace,
+  RedoSetSpace,
   NullBoardMemento,
 }
 
@@ -11,6 +13,8 @@ impl BoardMemento {
   pub fn turn_over(&self) -> bool {
     match self {
       BoardMemento::SetSpace(set_space_memento) => set_space_memento.has_set_space(),
+      BoardMemento::RevertSetSpace => true,
+      BoardMemento::RedoSetSpace => true,
       _ => false
     }
   }
